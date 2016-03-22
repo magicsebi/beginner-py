@@ -27,8 +27,6 @@ def getword():
 	
 def gallows(strks):
 	#This function will print the gallows, depending on how many strikes the user has
-	if strks >= 7 or strks <= -1:
-		exit()
 	print("\n _______")
 	print("|       |")
 	if strks == 0:
@@ -120,17 +118,15 @@ def hangman():
 				difficulty = input("> ")
 				difficulty = difficulty.lower()
 	
-	wordcheck = False #Initialize the check if the word has been guessed
+	checkloop = False #Initialize the check if the word has been guessed
 	strikes = 0 #Initialize the count for the number of strikes
 	blankword(word, letterset) #Print the blank word.
 	
-	while wordcheck == False: #If the word has not been guessed, go through the process!
+	while checkloop == False: #If the word has not been guessed, go through the process!
 		gallows(strikes) #Print the gallows, then print the known letters
 		print("Letters picked so far:\n", end="")
 		for item in letterset:
 			print(" %s " % item,  end="")
-			
-		print(letterset)
 		
 		userloop = True
 		while userloop == True: 
@@ -144,16 +140,19 @@ def hangman():
 			else: #If it's a letter and it's new, it's added to the list
 				letterset.append(letter)
 				userloop = False
-		
-        wordcheck = blankword(word, letterset)
-		
 		if letter not in wordlist: #if the letter is not in the word, that's a strike
 			strikes += 1
+		wordcheck = blankword(word, letterset)
 		if strikes == 6: #At 6 strikes the game is over.
-			print("Game over. You are dead.")
+			print("\nGame over. You are dead.")
 			print("The word was: " + word)
 			gallows(6)
-			wordcheck == True
+			exit()
+			
+		if wordcheck == True:
+			print ("Congratulations, you have guessed the word!")
+			checkloop == True
+			
 
 print("Welcome to Hangman for the Terminal.")
 hangman()     

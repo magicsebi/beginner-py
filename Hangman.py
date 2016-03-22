@@ -151,6 +151,7 @@ def hangman():
 			
 		if wordcheck == True:
 			print ("Congratulations, you have guessed the word!")
+			exit()
 			checkloop == True
 			
 

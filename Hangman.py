@@ -133,7 +133,7 @@ def hangman():
 			print("\nPick another letter:") #Input a new letter
 			letter = input("> ")
 			letter = letter.lower()
-			if len(letter) >= 2 or letter.isdigit(): #If the input is garbage, choose again
+			if len(letter) != 1 or not letter.isalpha(): #If the input is garbage, choose again
 				print("Invalid choice. Choose ONE letter.")
 			elif letter in letterset: #if the input has been chosen before, choose again
 				print("This letter has been chosen before.")

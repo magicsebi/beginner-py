@@ -9,7 +9,7 @@ We will have several functions:
 The game will also have several difficulty levels. 
 """
 
-from random import randint
+#from random import randint
 import urllib.request
 
 def getword():
@@ -27,7 +27,7 @@ def getword():
 	
 def gallows(strks):
 	#This function will print the gallows, depending on how many strikes the user has
-	if strks >= 7 or strks < 0:
+	if strks >= 7 or strks <= -1:
 		exit()
 	print("\n _______")
 	print("|       |")
@@ -58,108 +58,102 @@ def gallows(strks):
 		print("|      /|\\")
 		print("|      / \\")
 		print("|\n")
-		print("\nGame over.")
-		exit()
 	else:
 		pass
 
-
+		
 		
 def blankword(word, letterlist):
-	fullcheck = True
 	"""
-	This function will check if the word has been guessed.
-	If the word has not been guessed yet, the word will be printed along with the blanks.
-	if the word HAS been guessed, the word will be printed and a True check will be returned
+	This function will print the word and check if it has been guessed.
+	If the word has not been guessed yet, the word will be printed, along with the blanks, and the function will return FALSE
+	if the word HAS been guessed, there won't be any blanks printed so the function will return TRUE
 	"""
-	for letter in word:
+	guesscheck = True
+	wordlist = list(word)
+	for letter in wordlist:
 		if letter in letterlist:
-			print(letter + " "),
+			print(letter + " ", end="")
 		else:
-			fullcheck = False
-			print("_ "),
-		
-	if fullcheck == True:
-			print("Congratulations! You have guessed the word.")
-			exit()
-	return fullcheck
+			guesscheck = False,
+			print("_ ", end="")
+	
+	return guesscheck
 
 def hangman():
     
+	#Get a word, make sure it is a string, create a list with the letters of the word.
 	word = getword()
-	word = str(word)
-	#print(word)
-	#Now we have the word.
+	word = str(word) 
+	wordlist = list(word)
+	
+	#Create an empty set that contains the letters that will be guessed later.
+	letterset = []
+	
+	#Choose a difficulty level.
 	print("Choose a level of difficulty:")
 	print("(1) Easy: 2 free letters.\n(2) Medium: 1 free letter.\n(3) Hard: No free letters.")
-	difficulty = input("> ")
-	#Now we have the difficulty.
 	
-	letterset = []
-	#Now we have an empty set that contains the guessed letters.
-	xyz = True
-	#Next up the free letters are added to the set.
-	while xyz == True:
-		if difficulty == '3':
-			xyz = False
-		elif difficulty == '2':
+	difficulty = input("> ")
+	xyz = True 
+	while xyz == True: #Next up the free letters are added to the set, depending on the difficulty.
+		if difficulty == '3': #No letters for Hard mode.
+			xyz = False 
+		elif difficulty == '2': #ONE letter for Medium mode. 
 			letterset.append(word[0])
 			xyz = False
-		elif difficulty == '1':
+		elif difficulty == '1': #Two letters for Easy mode + check if first and last letter are the same.
 			letterset.append(word[0])
-			if word[0] == word[-1]:
-                #If the first letter is the same as the last letter, there's no need to add it again.
-                #This way we also avoid any errors.
-				pass
-			else:
+			if word[0] != word[-1]:
 				letterset.append(word[-1])
-				#Add the last letter to the set too.
 				xyz = False
-		else:
+			else:
+				xyz = False
+		else: #In any other case, the input was garbage. We let the user try again.
 			print("Invalid choice. Do you want to try again?\n Enter Y for Yes, any other key for No.")
-			choice = lower(input("> "))
-			if choice != "y":
+			difficulty = input("> ")
+			difficulty = difficulty.lower()
+			if difficulty != "y":
 				exit()
 			else:
 				print("(1) Easy: 2 free letters.\n(2) Medium: 1 free letter.\n(3) Hard: No free letters.")
-				difficulty = int(input("> "))
-	wordcheck = False
-	#This checks if the word has been guessed
-	strikes = 0
-	#this variable counts the number of strikes
-	blankword(word, letterset),
-	while wordcheck == False:
-		#If the word has not been guessed, we go through the process!
-		gallows(strikes)
-		#Print the gallows, then print the known letters
-		if len(letterset) >= 1:
-			print("Letters picked so far:")
-			for item in letterset:
-				print(" %s " % item),
-		else:
-			pass
+				difficulty = input("> ")
+				difficulty = difficulty.lower()
+	
+	wordcheck = False #Initialize the check if the word has been guessed
+	strikes = 0 #Initialize the count for the number of strikes
+	blankword(word, letterset) #Print the blank word.
+	
+	while wordcheck == False: #If the word has not been guessed, go through the process!
+		gallows(strikes) #Print the gallows, then print the known letters
+		print("Letters picked so far:\n", end="")
+		for item in letterset:
+			print(" %s " % item,  end="")
+			
+		print(letterset)
 		
-		#Now we get user input
 		userloop = True
-		while userloop == True:
-			print("Pick another letter:")
-			userchoice = input("> ")
-			userchoice.upper
-			if len(userchoice) >= 2:
-				print("Invalid choice. Choose only one letter.")
-			elif userchoice in letterset:
-				print("The letter has been chosen before.")
-			else:
-				letterset.append(userchoice)
+		while userloop == True: 
+			print("\nPick another letter:") #Input a new letter
+			letter = input("> ")
+			letter = letter.lower()
+			if len(letter) >= 2 or letter.isdigit(): #If the input is garbage, choose again
+				print("Invalid choice. Choose ONE letter.")
+			elif letter in letterset: #if the input has been chosen before, choose again
+				print("This letter has been chosen before.")
+			else: #If it's a letter and it's new, it's added to the list
+				letterset.append(letter)
 				userloop = False
-        #Now we check if the letter is in the word
-		wordlist = list(word)
-		wordcheck = blankword(word, letterset),
-		if userchoice not in wordlist:
+		
+        wordcheck = blankword(word, letterset)
+		
+		if letter not in wordlist: #if the letter is not in the word, that's a strike
 			strikes += 1
-            
-    
+		if strikes == 6: #At 6 strikes the game is over.
+			print("Game over. You are dead.")
+			print("The word was: " + word)
+			gallows(6)
+			wordcheck == True
+
 print("Welcome to Hangman for the Terminal.")
-hangman()
-        
-        
+hangman()     
